@@ -1,0 +1,349 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6",
+    "name": "SkillSwap Auth Service",
+    "description": "API collection for SkillSwap Auth Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/health",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "health"]
+        },
+        "description": "Check if the auth service is running"
+      },
+      "response": []
+    },
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"client\",\n    \"phoneNumber\": \"+923001234567\"\n}"
+        },
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/signup",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "signup"]
+        },
+        "description": "Register a new user"
+      },
+      "response": []
+    },
+    {
+      "name": "Verify Account",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userId\": \"{{userId}}\",\n    \"otp\": \"{{otp}}\"\n}"
+        },
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/verify",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "verify"]
+        },
+        "description": "Verify user account with OTP"
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.success && jsonData.data && jsonData.data.tokens) {",
+              "    pm.environment.set('accessToken', jsonData.data.tokens.accessToken);",
+              "    pm.environment.set('refreshToken', jsonData.data.tokens.refreshToken);",
+              "    pm.environment.set('userId', jsonData.data.user._id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"Password123!\"\n}"
+        },
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/login",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "login"]
+        },
+        "description": "Login user"
+      },
+      "response": []
+    },
+    {
+      "name": "Request Password Reset",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"john.doe@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/reset-password",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "reset-password"]
+        },
+        "description": "Request password reset"
+      },
+      "response": []
+    },
+    {
+      "name": "Reset Password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userId\": \"{{userId}}\",\n    \"otp\": \"{{resetOtp}}\",\n    \"newPassword\": \"NewPassword123!\"\n}"
+        },
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/reset-password/verify",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "reset-password", "verify"]
+        },
+        "description": "Reset password with OTP"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Current User",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/me",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "me"]
+        },
+        "description": "Get current user profile"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Profile",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Smith\",\n    \"bio\": \"Experienced software developer\",\n    \"skills\": [\"JavaScript\", \"Node.js\", \"React\"],\n    \"location\": {\n        \"country\": \"Pakistan\",\n        \"city\": \"Lahore\"\n    },\n    \"socialLinks\": {\n        \"linkedin\": \"https://linkedin.com/in/johnsmith\",\n        \"github\": \"https://github.com/johnsmith\",\n        \"website\": \"https://johnsmith.com\"\n    },\n    \"phoneNumber\": \"+923001234567\"\n}"
+        },
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/me",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "me"]
+        },
+        "description": "Update user profile"
+      },
+      "response": []
+    },
+    {
+      "name": "Change Password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"currentPassword\": \"Password123!\",\n    \"newPassword\": \"NewPassword123!\"\n}"
+        },
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/change-password",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "change-password"]
+        },
+        "description": "Change user password"
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Users (Admin)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/users?role=client&page=1&limit=10",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "users"],
+          "query": [
+            {
+              "key": "role",
+              "value": "client"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Get all users (admin only)"
+      },
+      "response": []
+    },
+    {
+      "name": "Get User by ID (Admin)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/users/{{userId}}",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "users", "{{userId}}"]
+        },
+        "description": "Get user by ID (admin only)"
+      },
+      "response": []
+    },
+    {
+      "name": "Update User (Admin)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Smith\",\n    \"role\": \"freelancer\",\n    \"isVerified\": true,\n    \"isActive\": true\n}"
+        },
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/users/{{userId}}",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "users", "{{userId}}"]
+        },
+        "description": "Update user (admin only)"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete User (Admin)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{AUTH_SERVICE_URL}}/api/auth/users/{{userId}}",
+          "host": ["{{AUTH_SERVICE_URL}}"],
+          "path": ["api", "auth", "users", "{{userId}}"]
+        },
+        "description": "Delete user (admin only)"
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "AUTH_SERVICE_URL",
+      "value": "http://localhost:3001",
+      "type": "string"
+    }
+  ]
+}
