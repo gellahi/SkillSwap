@@ -7,7 +7,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "install-all": "npm install && npm run install-services && npm run install-gateway && npm run install-frontend",
+    "install-services": "cd services/auth && npm install && cd ../projects && npm install && cd ../bids && npm install && cd ../messages && npm install && cd ../notifications && npm install",
+    "install-gateway": "cd api-gateway && npm install",
+    "install-frontend": "cd frontend && npm install",
+    "start-dev": "chmod +x start-dev.sh && ./start-dev.sh",
+    "stop-dev": "chmod +x stop-dev.sh && ./stop-dev.sh",
+    "deploy-prod": "chmod +x deploy-prod.sh && ./deploy-prod.sh",
+    "docker-build": "docker-compose build",
+    "docker-up": "docker-compose up -d",
+    "docker-down": "docker-compose down"
   },
   "repository": {
     "type": "git",

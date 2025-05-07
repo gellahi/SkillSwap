@@ -16,7 +16,9 @@ SkillSwap is a freelancing platform built with MERN stack microservices architec
     /db-connection         # MongoDB connection utilities
     /middlewares           # Common middleware (auth, error handling)
     /utils                 # Shared utility functions
-  /client                  # React frontend application (coming soon)
+  /api-gateway             # API Gateway for routing requests
+  /frontend                # React frontend application
+  /docker                  # Docker configuration files
   /logs                    # Application logs
 ```
 
@@ -25,7 +27,7 @@ SkillSwap is a freelancing platform built with MERN stack microservices architec
 ### Prerequisites
 
 - Node.js v18 or higher
-- MongoDB Atlas account
+- Docker and Docker Compose
 - npm or yarn
 
 ### Installation
@@ -36,47 +38,103 @@ SkillSwap is a freelancing platform built with MERN stack microservices architec
    cd skillswap
    ```
 
-2. Install dependencies:
-   ```
-   npm install
-   ```
-
-3. Create a `.env` file based on `.env.example`:
+2. Create a `.env` file based on `.env.example`:
    ```
    cp .env.example .env
    ```
 
-4. Update the `.env` file with your MongoDB Atlas connection string and other configuration values.
+3. Update the `.env` file with your configuration values.
 
-5. Start the development server:
+### Development
+
+#### Using Docker (Recommended)
+
+1. Make the start script executable:
+   ```
+   chmod +x start-dev.sh
+   ```
+
+2. Start all services:
+   ```
+   ./start-dev.sh
+   ```
+
+3. Stop all services:
+   ```
+   ./stop-dev.sh
+   ```
+
+#### Manual Setup
+
+1. Install dependencies for all services:
+   ```
+   npm run install-all
+   ```
+
+2. Start MongoDB:
+   ```
+   docker-compose up -d mongodb
+   ```
+
+3. Start all services:
    ```
    npm run dev
    ```
 
-## Microservices
+## Architecture
 
-### Auth Service
+### Microservices
+
+#### Auth Service
 Handles user authentication, registration, and profile management.
 
-### Projects Service
+#### Projects Service
 Manages project creation, updates, and search functionality.
 
-### Bids Service
+#### Bids Service
 Handles bid submissions, updates, and real-time notifications.
 
-### Messages Service
+#### Messages Service
 Provides real-time messaging between clients and freelancers.
 
-### Notifications Service
+#### Notifications Service
 Manages email, SMS, and in-app notifications.
+
+### API Gateway
+Acts as a single entry point for all client requests, routing them to the appropriate microservices.
+
+### Frontend
+React application with Redux for state management and Tailwind CSS for styling.
+
+## Deployment
+
+### Production Deployment
+
+1. Make the deployment script executable:
+   ```
+   chmod +x deploy-prod.sh
+   ```
+
+2. Deploy to production:
+   ```
+   ./deploy-prod.sh
+   ```
+
+### Manual Deployment
+
+1. Build and start all services:
+   ```
+   docker-compose -f docker-compose.prod.yml up -d --build
+   ```
 
 ## Technologies Used
 
 - **Backend**: Node.js, Express.js, MongoDB, Mongoose
 - **Authentication**: JWT, bcrypt
 - **Real-time Communication**: Socket.io
-- **Frontend**: React, Tailwind CSS (coming soon)
-- **State Management**: Zustand or Redux Toolkit (coming soon)
+- **Frontend**: React, Redux Toolkit, Tailwind CSS
+- **API Gateway**: Express.js, http-proxy-middleware
+- **Containerization**: Docker, Docker Compose
 
 ## License
 
