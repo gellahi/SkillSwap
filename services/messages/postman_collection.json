@@ -1,0 +1,313 @@
+{
+  "info": {
+    "_postman_id": "d1e2f3g4-h5i6-j7k8-l9m0-n1o2p3q4r5s6",
+    "name": "SkillSwap Messages Service",
+    "description": "API collection for SkillSwap Messages Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/health",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "health"]
+        },
+        "description": "Check if the messages service is running"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Conversation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"participants\": [\"{{recipientId}}\"],\n    \"title\": \"Project Discussion\",\n    \"type\": \"direct\"\n}"
+        },
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/conversations",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "conversations"]
+        },
+        "description": "Create a new conversation"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Conversations",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/conversations?page=1&limit=20",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "conversations"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "20"
+            }
+          ]
+        },
+        "description": "Get all conversations for current user"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Conversation by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/conversations/{{conversationId}}",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "conversations", "{{conversationId}}"]
+        },
+        "description": "Get conversation by ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Conversation",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Updated Conversation Title\",\n    \"participants\": [\"{{newParticipantId}}\"]\n}"
+        },
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/conversations/{{conversationId}}",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "conversations", "{{conversationId}}"]
+        },
+        "description": "Update conversation"
+      },
+      "response": []
+    },
+    {
+      "name": "Leave Conversation",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/conversations/{{conversationId}}/leave",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "conversations", "{{conversationId}}", "leave"]
+        },
+        "description": "Leave conversation"
+      },
+      "response": []
+    },
+    {
+      "name": "Mark Conversation as Read",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/conversations/{{conversationId}}/read",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "conversations", "{{conversationId}}", "read"]
+        },
+        "description": "Mark conversation as read"
+      },
+      "response": []
+    },
+    {
+      "name": "Send Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"conversationId\": \"{{conversationId}}\",\n    \"text\": \"Hello, this is a test message!\",\n    \"attachments\": [\n        {\n            \"name\": \"document.pdf\",\n            \"url\": \"https://example.com/document.pdf\",\n            \"type\": \"document\",\n            \"size\": 1024000\n        }\n    ]\n}"
+        },
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages"]
+        },
+        "description": "Send a new message"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Messages",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/conversations/{{conversationId}}/messages?page=1&limit=50&before={{timestamp}}",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "conversations", "{{conversationId}}", "messages"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "50"
+            },
+            {
+              "key": "before",
+              "value": "{{timestamp}}",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "Get messages for a conversation"
+      },
+      "response": []
+    },
+    {
+      "name": "Edit Message",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"text\": \"Updated message text\"\n}"
+        },
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/{{messageId}}",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "{{messageId}}"]
+        },
+        "description": "Edit a message"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Message",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/{{messageId}}",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "{{messageId}}"]
+        },
+        "description": "Delete a message"
+      },
+      "response": []
+    },
+    {
+      "name": "Mark Message as Read",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{MESSAGES_SERVICE_URL}}/api/messages/{{messageId}}/read",
+          "host": ["{{MESSAGES_SERVICE_URL}}"],
+          "path": ["api", "messages", "{{messageId}}", "read"]
+        },
+        "description": "Mark message as read"
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "MESSAGES_SERVICE_URL",
+      "value": "http://localhost:3004",
+      "type": "string"
+    }
+  ]
+}

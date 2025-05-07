@@ -1,0 +1,281 @@
+{
+  "info": {
+    "_postman_id": "e1f2g3h4-i5j6-k7l8-m9n0-o1p2q3r4s5t6",
+    "name": "SkillSwap Notifications Service",
+    "description": "API collection for SkillSwap Notifications Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify/health",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify", "health"]
+        },
+        "description": "Check if the notifications service is running"
+      },
+      "response": []
+    },
+    {
+      "name": "Send In-App Notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userId\": \"{{userId}}\",\n    \"title\": \"New Project Posted\",\n    \"message\": \"A new project matching your skills has been posted\",\n    \"type\": \"project\",\n    \"data\": {\n        \"projectId\": \"{{projectId}}\"\n    }\n}"
+        },
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify/in-app",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify", "in-app"]
+        },
+        "description": "Send in-app notification"
+      },
+      "response": []
+    },
+    {
+      "name": "Send Email Notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userId\": \"{{userId}}\",\n    \"subject\": \"New Project Posted\",\n    \"message\": \"A new project matching your skills has been posted\",\n    \"type\": \"project\",\n    \"data\": {\n        \"projectId\": \"{{projectId}}\"\n    },\n    \"template\": \"<h1>New Project Posted</h1><p>A new project matching your skills has been posted</p>\"\n}"
+        },
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify/email",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify", "email"]
+        },
+        "description": "Send email notification"
+      },
+      "response": []
+    },
+    {
+      "name": "Send SMS Notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userId\": \"{{userId}}\",\n    \"message\": \"Your bid has been accepted! You can now start working on the project.\",\n    \"type\": \"bid-accepted\",\n    \"data\": {\n        \"projectId\": \"{{projectId}}\",\n        \"bidId\": \"{{bidId}}\"\n    }\n}"
+        },
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify/sms",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify", "sms"]
+        },
+        "description": "Send SMS notification"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify?page=1&limit=20&isRead=false&type=project",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "20"
+            },
+            {
+              "key": "isRead",
+              "value": "false"
+            },
+            {
+              "key": "type",
+              "value": "project"
+            }
+          ]
+        },
+        "description": "Get notifications for current user"
+      },
+      "response": []
+    },
+    {
+      "name": "Mark Notification as Read",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify/{{notificationId}}/read",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify", "{{notificationId}}", "read"]
+        },
+        "description": "Mark notification as read"
+      },
+      "response": []
+    },
+    {
+      "name": "Mark All Notifications as Read",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify/read-all?type=project",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify", "read-all"],
+          "query": [
+            {
+              "key": "type",
+              "value": "project"
+            }
+          ]
+        },
+        "description": "Mark all notifications as read"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Notification",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify/{{notificationId}}",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify", "{{notificationId}}"]
+        },
+        "description": "Delete notification"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Notification Preferences",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify/preferences",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify", "preferences"]
+        },
+        "description": "Get notification preferences for current user"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Notification Preferences",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": {\n        \"enabled\": true,\n        \"frequency\": \"daily\",\n        \"types\": {\n            \"message\": false,\n            \"bid\": true\n        }\n    },\n    \"sms\": {\n        \"enabled\": false\n    },\n    \"doNotDisturb\": {\n        \"enabled\": true,\n        \"startTime\": \"23:00\",\n        \"endTime\": \"07:00\"\n    }\n}"
+        },
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify/preferences",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify", "preferences"]
+        },
+        "description": "Update notification preferences"
+      },
+      "response": []
+    },
+    {
+      "name": "Reset Notification Preferences",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{NOTIFICATIONS_SERVICE_URL}}/api/notify/preferences/reset",
+          "host": ["{{NOTIFICATIONS_SERVICE_URL}}"],
+          "path": ["api", "notify", "preferences", "reset"]
+        },
+        "description": "Reset notification preferences to default"
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "NOTIFICATIONS_SERVICE_URL",
+      "value": "http://localhost:3005",
+      "type": "string"
+    }
+  ]
+}
