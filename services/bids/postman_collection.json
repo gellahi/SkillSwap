@@ -1,0 +1,480 @@
+{
+  "info": {
+    "_postman_id": "c1d2e3f4-g5h6-i7j8-k9l0-m1n2o3p4q5r6",
+    "name": "SkillSwap Bids Service",
+    "description": "API collection for SkillSwap Bids Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/health",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "health"]
+        },
+        "description": "Check if the bids service is running"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Bid",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{freelancerAccessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"projectId\": \"{{projectId}}\",\n    \"amount\": 15000,\n    \"deliveryTime\": 14,\n    \"deliveryTimeUnit\": \"days\",\n    \"proposal\": \"I am an experienced web developer with expertise in responsive design. I can deliver a high-quality website that meets all your requirements within the specified timeframe.\",\n    \"attachments\": [\n        {\n            \"name\": \"portfolio.pdf\",\n            \"url\": \"https://example.com/portfolio.pdf\",\n            \"type\": \"document\"\n        }\n    ],\n    \"milestones\": [\n        {\n            \"title\": \"Design Approval\",\n            \"description\": \"Create and get approval for the website design\",\n            \"amount\": 5000,\n            \"dueDate\": \"2023-12-15T00:00:00.000Z\"\n        },\n        {\n            \"title\": \"Development\",\n            \"description\": \"Develop the website based on approved design\",\n            \"amount\": 7000,\n            \"dueDate\": \"2023-12-25T00:00:00.000Z\"\n        },\n        {\n            \"title\": \"Testing and Deployment\",\n            \"description\": \"Test and deploy the website\",\n            \"amount\": 3000,\n            \"dueDate\": \"2023-12-31T00:00:00.000Z\"\n        }\n    ]\n}"
+        },
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids"]
+        },
+        "description": "Create a new bid"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Bids by Project ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/project/{{projectId}}?page=1&limit=10&sort=amount&order=asc",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "project", "{{projectId}}"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            },
+            {
+              "key": "sort",
+              "value": "amount"
+            },
+            {
+              "key": "order",
+              "value": "asc"
+            }
+          ]
+        },
+        "description": "Get all bids for a project"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Bids by Freelancer ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{freelancerAccessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/freelancer/{{freelancerId}}?page=1&limit=10&status=pending",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "freelancer", "{{freelancerId}}"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            },
+            {
+              "key": "status",
+              "value": "pending"
+            }
+          ]
+        },
+        "description": "Get all bids by a freelancer"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Bid by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}"]
+        },
+        "description": "Get bid by ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Bid",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{freelancerAccessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"amount\": 18000,\n    \"deliveryTime\": 10,\n    \"proposal\": \"Updated proposal with more details about my experience and approach to the project.\"\n}"
+        },
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}"]
+        },
+        "description": "Update bid"
+      },
+      "response": []
+    },
+    {
+      "name": "Withdraw Bid",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{freelancerAccessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/withdraw",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "withdraw"]
+        },
+        "description": "Withdraw bid"
+      },
+      "response": []
+    },
+    {
+      "name": "Accept Bid",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{clientAccessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/accept",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "accept"]
+        },
+        "description": "Accept bid"
+      },
+      "response": []
+    },
+    {
+      "name": "Reject Bid",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{clientAccessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/reject",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "reject"]
+        },
+        "description": "Reject bid"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Counter Offer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{clientAccessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"amount\": 12000,\n    \"deliveryTime\": 21,\n    \"deliveryTimeUnit\": \"days\",\n    \"message\": \"I'm interested in your proposal, but I'd like to adjust the budget and timeline. Can you work with these terms?\"\n}"
+        },
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/counter-offer",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "counter-offer"]
+        },
+        "description": "Create a counter offer"
+      },
+      "response": []
+    },
+    {
+      "name": "Accept Counter Offer",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{freelancerAccessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/counter-offer/{{counterOfferId}}/accept",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "counter-offer", "{{counterOfferId}}", "accept"]
+        },
+        "description": "Accept counter offer"
+      },
+      "response": []
+    },
+    {
+      "name": "Reject Counter Offer",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{freelancerAccessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/counter-offer/{{counterOfferId}}/reject",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "counter-offer", "{{counterOfferId}}", "reject"]
+        },
+        "description": "Reject counter offer"
+      },
+      "response": []
+    },
+    {
+      "name": "Add Milestone",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{freelancerAccessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"New Milestone\",\n    \"description\": \"Description of the new milestone\",\n    \"amount\": 5000,\n    \"dueDate\": \"2024-01-15T00:00:00.000Z\"\n}"
+        },
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/milestones",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "milestones"]
+        },
+        "description": "Add milestone to bid"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Milestone",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{freelancerAccessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Updated Milestone Title\",\n    \"description\": \"Updated milestone description\",\n    \"amount\": 6000,\n    \"dueDate\": \"2024-01-20T00:00:00.000Z\"\n}"
+        },
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/milestones/{{milestoneId}}",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "milestones", "{{milestoneId}}"]
+        },
+        "description": "Update milestone"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Milestone",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{freelancerAccessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/milestones/{{milestoneId}}",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "milestones", "{{milestoneId}}"]
+        },
+        "description": "Delete milestone"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Milestone Status",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"status\": \"in-progress\"\n}"
+        },
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/milestones/{{milestoneId}}/status",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "milestones", "{{milestoneId}}", "status"]
+        },
+        "description": "Update milestone status"
+      },
+      "response": []
+    },
+    {
+      "name": "Add Client Feedback",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{clientAccessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"rating\": 5,\n    \"comment\": \"Excellent work! The freelancer delivered high-quality work on time and was very professional throughout the project.\"\n}"
+        },
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/feedback/client",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "feedback", "client"]
+        },
+        "description": "Add client feedback"
+      },
+      "response": []
+    },
+    {
+      "name": "Add Freelancer Feedback",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{freelancerAccessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"rating\": 4,\n    \"comment\": \"Great client to work with! Clear requirements and prompt communication. Would work with them again.\"\n}"
+        },
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/feedback/freelancer",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "feedback", "freelancer"]
+        },
+        "description": "Add freelancer feedback"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Feedback",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{BIDS_SERVICE_URL}}/api/bids/{{bidId}}/feedback",
+          "host": ["{{BIDS_SERVICE_URL}}"],
+          "path": ["api", "bids", "{{bidId}}", "feedback"]
+        },
+        "description": "Get feedback for a bid"
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "BIDS_SERVICE_URL",
+      "value": "http://localhost:3003",
+      "type": "string"
+    }
+  ]
+}
