@@ -1,8 +1,8 @@
 # Dependencies
 node_modules/
 */node_modules/
-client/node_modules/
-server/node_modules/
+frontend/node_modules/
+services/*/node_modules/
 npm-debug.log
 yarn-debug.log
 yarn-error.log
@@ -12,8 +12,8 @@ yarn-error.log
 # Environment variables
 .env
 */.env
-server/.env
-client/.env
+services/*/.env
+frontend/.env
 .env.local
 .env.development.local
 .env.test.local
@@ -28,13 +28,13 @@ client/.env
 /dist
 */build/
 */dist/
-client/build/
-client/dist/
-server/dist/
+frontend/build/
+frontend/dist/
+services/*/dist/
 /.next
 /out
-client/.next/
-client/out/
+frontend/.next/
+frontend/out/
 
 # Debug logs
 logs
@@ -71,20 +71,20 @@ Thumbs.db
 # Testing
 /coverage
 */coverage/
-client/coverage/
-server/coverage/
+frontend/coverage/
+services/*/coverage/
 /.nyc_output
 */.nyc_output/
 
-# Client-specific
-client/.cache/
-client/.temp/
-client/.eslintcache
-client/public/env.js
+# frontend-specific
+frontend/.cache/
+frontend/.temp/
+frontend/.eslintcache
+frontend/public/env.js
 
 # Server-specific
-server/uploads/
-server/tmp/
+services/*/uploads/
+services/*/tmp/
 
 # Misc
 .cache/

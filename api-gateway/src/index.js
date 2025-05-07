@@ -12,6 +12,16 @@ import { dirname } from 'path';
 // Load environment variables
 dotenv.config();
 
+// Log environment variables for debugging
+console.log('Environment variables loaded:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('AUTH_SERVICE_URL:', process.env.AUTH_SERVICE_URL);
+console.log('PROJECTS_SERVICE_URL:', process.env.PROJECTS_SERVICE_URL);
+console.log('BIDS_SERVICE_URL:', process.env.BIDS_SERVICE_URL);
+console.log('MESSAGES_SERVICE_URL:', process.env.MESSAGES_SERVICE_URL);
+console.log('NOTIFICATIONS_SERVICE_URL:', process.env.NOTIFICATIONS_SERVICE_URL);
+
 // Import middleware
 import { notFound, errorHandler } from './middleware/error.middleware.js';
 
