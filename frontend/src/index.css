@@ -6,10 +6,39 @@
   html {
     font-family: 'Inter', system-ui, sans-serif;
   }
-  
+
   body {
     @apply bg-gray-50;
     min-height: 100vh;
+  }
+
+  /* Accessibility styles */
+  .high-contrast {
+    @apply bg-black text-white;
+  }
+
+  .high-contrast * {
+    @apply bg-black text-white border-white;
+  }
+
+  .high-contrast button,
+  .high-contrast a,
+  .high-contrast input,
+  .high-contrast select {
+    @apply bg-white text-black border-2 border-white;
+  }
+
+  .inverted {
+    filter: invert(1) hue-rotate(180deg);
+  }
+
+  .reduce-motion * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .focus-highlight *:focus {
+    @apply outline-none ring-4 ring-yellow-400 ring-opacity-100;
   }
 }
 
@@ -17,43 +46,43 @@
   .btn {
     @apply px-4 py-2 rounded-md font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
-  
+
   .btn-primary {
     @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
   }
-  
+
   .btn-secondary {
     @apply bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500;
   }
-  
+
   .btn-outline {
     @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-primary-500;
   }
-  
+
   .input {
     @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500;
   }
-  
+
   .card {
     @apply bg-white rounded-lg shadow-md p-6;
   }
-  
+
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
-  
+
   .badge-success {
     @apply bg-green-100 text-green-800;
   }
-  
+
   .badge-warning {
     @apply bg-yellow-100 text-yellow-800;
   }
-  
+
   .badge-error {
     @apply bg-red-100 text-red-800;
   }
-  
+
   .badge-info {
     @apply bg-blue-100 text-blue-800;
   }

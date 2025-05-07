@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { checkAuth } from './features/auth/authSlice'
+import { initializeSocket, disconnectSocket } from './services/socketService'
 
 // Layouts
 import MainLayout from './components/layouts/MainLayout'
@@ -28,44 +29,62 @@ import NotFoundPage from './pages/NotFoundPage'
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useSelector(state => state.auth)
-  
+
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
     </div>
   }
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
-  
+
   return children
 }
 
 // Guest Route Component (redirects if already logged in)
 const GuestRoute = ({ children }) => {
   const { isAuthenticated, loading } = useSelector(state => state.auth)
-  
+
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
     </div>
   }
-  
+
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />
   }
-  
+
   return children
 }
 
 function App() {
   const dispatch = useDispatch()
-  
+  const { isAuthenticated } = useSelector(state => state.auth)
+
+  // Check authentication status on mount
   useEffect(() => {
     dispatch(checkAuth())
   }, [dispatch])
-  
+
+  // Initialize or disconnect socket based on authentication status
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Initialize socket connection when user is authenticated
+      initializeSocket()
+    } else {
+      // Disconnect socket when user is not authenticated
+      disconnectSocket()
+    }
+
+    // Clean up on unmount
+    return () => {
+      disconnectSocket()
+    }
+  }, [isAuthenticated])
+
   return (
     <Routes>
       {/* Public Routes */}
@@ -75,7 +94,7 @@ function App() {
         <Route path="projects/:id" element={<ProjectDetailsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
-      
+
       {/* Auth Routes */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={
@@ -100,7 +119,7 @@ function App() {
         } />
         <Route path="/verify-account" element={<VerifyAccountPage />} />
       </Route>
-      
+
       {/* Protected Routes */}
       <Route path="/" element={
         <ProtectedRoute>
