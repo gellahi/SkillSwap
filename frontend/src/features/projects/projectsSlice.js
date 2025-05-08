@@ -73,6 +73,20 @@ export const deleteProject = createAsyncThunk(
   }
 )
 
+// Get client projects
+export const getClientProjects = createAsyncThunk(
+  'projects/getClientProjects',
+  async (params, { getState, rejectWithValue }) => {
+    try {
+      const { user } = getState().auth
+      const response = await projectService.getProjectsByClientId(user._id, params)
+      return response
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch client projects')
+    }
+  }
+)
+
 // Get categories
 export const getCategories = createAsyncThunk(
   'projects/getCategories',
@@ -130,7 +144,7 @@ const projectsSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-      
+
       // Get Project By ID
       .addCase(getProjectById.pending, (state) => {
         state.loading = true
@@ -144,7 +158,7 @@ const projectsSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-      
+
       // Create Project
       .addCase(createProject.pending, (state) => {
         state.loading = true
@@ -158,7 +172,7 @@ const projectsSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-      
+
       // Update Project
       .addCase(updateProject.pending, (state) => {
         state.loading = true
@@ -167,7 +181,7 @@ const projectsSlice = createSlice({
       .addCase(updateProject.fulfilled, (state, action) => {
         state.loading = false
         state.project = action.payload
-        state.projects = state.projects.map(project => 
+        state.projects = state.projects.map(project =>
           project._id === action.payload._id ? action.payload : project
         )
       })
@@ -175,7 +189,7 @@ const projectsSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-      
+
       // Delete Project
       .addCase(deleteProject.pending, (state) => {
         state.loading = true
@@ -189,7 +203,22 @@ const projectsSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-      
+
+      // Get Client Projects
+      .addCase(getClientProjects.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(getClientProjects.fulfilled, (state, action) => {
+        state.loading = false
+        state.projects = action.payload.projects
+        state.pagination = action.payload.pagination
+      })
+      .addCase(getClientProjects.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+
       // Get Categories
       .addCase(getCategories.pending, (state) => {
         state.loading = true

@@ -14,12 +14,12 @@ const checkAuth = async () => {
 const login = async (userData) => {
   try {
     const response = await api.post('/auth/login', userData);
-    
+
     // Save token to localStorage
     if (response.accessToken) {
       localStorage.setItem('token', response.accessToken);
     }
-    
+
     return response.data;
   } catch (error) {
     throw error;
@@ -70,10 +70,10 @@ const resetPassword = async (token, password) => {
 const logout = async () => {
   try {
     const response = await api.post('/auth/logout');
-    
+
     // Remove token from localStorage
     localStorage.removeItem('token');
-    
+
     return response.data;
   } catch (error) {
     // Remove token even if logout fails
@@ -102,6 +102,16 @@ const changePassword = async (passwordData) => {
   }
 };
 
+// Resend verification email
+const resendVerification = async () => {
+  try {
+    const response = await api.post('/auth/resend-verification');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const authService = {
   checkAuth,
   login,
@@ -111,7 +121,8 @@ const authService = {
   resetPassword,
   logout,
   updateProfile,
-  changePassword
+  changePassword,
+  resendVerification
 };
 
 export default authService;

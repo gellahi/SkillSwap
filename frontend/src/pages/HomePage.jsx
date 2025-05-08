@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { 
-  UserGroupIcon, 
-  BriefcaseIcon, 
-  CurrencyDollarIcon, 
-  ChatBubbleLeftRightIcon 
+import {
+  UserGroupIcon,
+  BriefcaseIcon,
+  CurrencyDollarIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 
 const HomePage = () => {
@@ -47,7 +47,7 @@ const HomePage = () => {
           clientName: 'TechInsider'
         }
       ]);
-      
+
       setCategories([
         { id: '1', name: 'Web Development', count: 120, icon: 'code' },
         { id: '2', name: 'Mobile Development', count: 85, icon: 'mobile' },
@@ -56,7 +56,7 @@ const HomePage = () => {
         { id: '5', name: 'Digital Marketing', count: 58, icon: 'chart' },
         { id: '6', name: 'Data Science', count: 42, icon: 'data' }
       ]);
-      
+
       setIsLoading(false);
     }, 1000);
   }, []);
@@ -74,7 +74,7 @@ const HomePage = () => {
     },
     {
       title: 'Secure Payments',
-      description: 'Our escrow system ensures that payments are released only when you're satisfied with the work.',
+      description: 'Our escrow system ensures that payments are released only when you are satisfied with the work.',
       icon: <CurrencyDollarIcon className="h-10 w-10 text-primary-600" />
     },
     {
@@ -148,7 +148,7 @@ const HomePage = () => {
             Our platform makes it easy to connect, collaborate, and create amazing projects together
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -168,7 +168,7 @@ const HomePage = () => {
             View All Projects
           </Link>
         </div>
-        
+
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
@@ -226,7 +226,7 @@ const HomePage = () => {
       {/* Categories Section */}
       <section className="py-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Browse by Category</h2>
-        
+
         {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {[1, 2, 3, 4, 5, 6].map(i => (
@@ -247,10 +247,10 @@ const HomePage = () => {
               >
                 <div className="h-12 w-12 flex items-center justify-center bg-primary-100 text-primary-600 rounded-full mb-3">
                   {/* Placeholder for category icon */}
-                  <span className="text-xl">{category.icon === 'code' ? '⌨️' : 
-                                            category.icon === 'mobile' ? '📱' : 
-                                            category.icon === 'design' ? '🎨' : 
-                                            category.icon === 'edit' ? '✏️' : 
+                  <span className="text-xl">{category.icon === 'code' ? '⌨️' :
+                                            category.icon === 'mobile' ? '📱' :
+                                            category.icon === 'design' ? '🎨' :
+                                            category.icon === 'edit' ? '✏️' :
                                             category.icon === 'chart' ? '📊' : '📊'}</span>
                 </div>
                 <h3 className="text-gray-900 font-medium text-center">{category.name}</h3>

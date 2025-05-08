@@ -105,6 +105,21 @@ export const logout = createAsyncThunk(
   }
 )
 
+// Resend verification email
+export const resendVerification = createAsyncThunk(
+  'auth/resendVerification',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authService.resendVerification()
+      toast.success('Verification email has been resent')
+      return response
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to resend verification email')
+      return rejectWithValue(error.response?.data?.message || 'Failed to resend verification email')
+    }
+  }
+)
+
 const initialState = {
   user: null,
   isAuthenticated: false,
@@ -136,7 +151,7 @@ const authSlice = createSlice({
         state.isAuthenticated = false
         state.user = null
       })
-      
+
       // Login
       .addCase(login.pending, (state) => {
         state.loading = true
@@ -152,7 +167,7 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-      
+
       // Register
       .addCase(register.pending, (state) => {
         state.loading = true
@@ -166,7 +181,7 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-      
+
       // Verify Account
       .addCase(verifyAccount.pending, (state) => {
         state.loading = true
@@ -180,7 +195,7 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-      
+
       // Forgot Password
       .addCase(forgotPassword.pending, (state) => {
         state.loading = true
@@ -194,7 +209,7 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-      
+
       // Reset Password
       .addCase(resetPassword.pending, (state) => {
         state.loading = true
@@ -208,13 +223,27 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-      
+
       // Logout
       .addCase(logout.fulfilled, (state) => {
         state.user = null
         state.isAuthenticated = false
         state.loading = false
         state.error = null
+      })
+
+      // Resend Verification
+      .addCase(resendVerification.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(resendVerification.fulfilled, (state) => {
+        state.loading = false
+        state.error = null
+      })
+      .addCase(resendVerification.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
       })
   }
 })
