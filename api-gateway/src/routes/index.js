@@ -6,7 +6,8 @@ import {
   projectsServiceProxy,
   bidsServiceProxy,
   messagesServiceProxy,
-  notificationsServiceProxy
+  notificationsServiceProxy,
+  voiceSearchServiceProxy
 } from '../middleware/proxy.middleware.js';
 
 const router = express.Router();
@@ -57,5 +58,8 @@ router.post('/api/notify/sms', apiLimiter, notificationsServiceProxy);
 
 // Notifications routes (token required)
 router.use('/api/notify', verifyToken, notificationsServiceProxy);
+
+// Voice Search routes (token required)
+router.use('/api/voice-search', verifyToken, voiceSearchServiceProxy);
 
 export default router;

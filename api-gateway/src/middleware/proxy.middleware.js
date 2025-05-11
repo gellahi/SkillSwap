@@ -60,6 +60,7 @@ logger.info(`PROJECTS_SERVICE_URL: ${process.env.PROJECTS_SERVICE_URL}`);
 logger.info(`BIDS_SERVICE_URL: ${process.env.BIDS_SERVICE_URL}`);
 logger.info(`MESSAGES_SERVICE_URL: ${process.env.MESSAGES_SERVICE_URL}`);
 logger.info(`NOTIFICATIONS_SERVICE_URL: ${process.env.NOTIFICATIONS_SERVICE_URL}`);
+logger.info(`VOICE_SEARCH_SERVICE_URL: ${process.env.VOICE_SEARCH_SERVICE_URL}`);
 
 /**
  * Auth service proxy middleware
@@ -101,11 +102,20 @@ export const notificationsServiceProxy = createServiceProxy(
   process.env.NOTIFICATIONS_SERVICE_URL || 'http://localhost:3005'
 );
 
+/**
+ * Voice Search service proxy middleware
+ */
+export const voiceSearchServiceProxy = createServiceProxy(
+  '/api/voice-search',
+  process.env.VOICE_SEARCH_SERVICE_URL || 'http://localhost:3006'
+);
+
 export default {
   createServiceProxy,
   authServiceProxy,
   projectsServiceProxy,
   bidsServiceProxy,
   messagesServiceProxy,
-  notificationsServiceProxy
+  notificationsServiceProxy,
+  voiceSearchServiceProxy
 };

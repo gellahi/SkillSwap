@@ -187,6 +187,39 @@ services:
     networks:
       - skillswap-network
 
+  # Voice Search Service
+  voice-search-service:
+    build:
+      context: ./services/voice-search
+      dockerfile: Dockerfile
+    container_name: voice-search-service
+    restart: always
+    ports:
+      - "3006:3006"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=True
+      - PORT=3006
+      - MONGO_URI=mongodb://root:rootpassword@mongodb:27017/skillswap_voice_search?authSource=admin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=1
+      - REDIS_PREFIX=skillswap_voice_search:
+      - REDIS_CACHE_TTL=3600
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - PROJECTS_SERVICE_URL=http://projects-service:3002
+      - JWT_PUBLIC_KEY=skillswap_jwt_public_key_development
+      - SPEECH_RECOGNITION_LANGUAGE=en-US
+    volumes:
+      - ./services/voice-search:/app
+    depends_on:
+      - mongodb
+      - redis
+      - auth-service
+      - projects-service
+    networks:
+      - skillswap-network
+
   # API Gateway
   api-gateway:
     build:
@@ -204,6 +237,7 @@ services:
       - BIDS_SERVICE_URL=http://bids-service:3003
       - MESSAGES_SERVICE_URL=http://messages-service:3004
       - NOTIFICATIONS_SERVICE_URL=http://notifications-service:3005
+      - VOICE_SEARCH_SERVICE_URL=http://voice-search-service:3006
       - FRONTEND_URL=http://localhost:5173
       - JWT_PUBLIC_KEY=skillswap_jwt_public_key_development
     volumes:
@@ -215,6 +249,7 @@ services:
       - bids-service
       - messages-service
       - notifications-service
+      - voice-search-service
     networks:
       - skillswap-network
 

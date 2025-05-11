@@ -21,6 +21,7 @@ console.log('PROJECTS_SERVICE_URL:', process.env.PROJECTS_SERVICE_URL);
 console.log('BIDS_SERVICE_URL:', process.env.BIDS_SERVICE_URL);
 console.log('MESSAGES_SERVICE_URL:', process.env.MESSAGES_SERVICE_URL);
 console.log('NOTIFICATIONS_SERVICE_URL:', process.env.NOTIFICATIONS_SERVICE_URL);
+console.log('VOICE_SEARCH_SERVICE_URL:', process.env.VOICE_SEARCH_SERVICE_URL);
 
 // Import middleware
 import { notFound, errorHandler } from './middleware/error.middleware.js';
@@ -77,7 +78,8 @@ app.get('/', (req, res) => {
       '/api/projects',
       '/api/bids',
       '/api/messages',
-      '/api/notify'
+      '/api/notify',
+      '/api/voice-search'
     ]
   });
 });
