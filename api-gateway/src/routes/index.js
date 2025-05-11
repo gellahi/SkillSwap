@@ -7,7 +7,8 @@ import {
   bidsServiceProxy,
   messagesServiceProxy,
   notificationsServiceProxy,
-  voiceSearchServiceProxy
+  voiceSearchServiceProxy,
+  paymentServiceProxy
 } from '../middleware/proxy.middleware.js';
 
 const router = express.Router();
@@ -61,5 +62,11 @@ router.use('/api/notify', verifyToken, notificationsServiceProxy);
 
 // Voice Search routes (token required)
 router.use('/api/voice-search', verifyToken, voiceSearchServiceProxy);
+
+// Payment routes (public)
+router.get('/api/payments/health', apiLimiter, paymentServiceProxy);
+
+// Payment routes (token required)
+router.use('/api/payments', verifyToken, paymentServiceProxy);
 
 export default router;

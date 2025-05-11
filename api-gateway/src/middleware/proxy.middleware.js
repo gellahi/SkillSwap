@@ -61,6 +61,7 @@ logger.info(`BIDS_SERVICE_URL: ${process.env.BIDS_SERVICE_URL}`);
 logger.info(`MESSAGES_SERVICE_URL: ${process.env.MESSAGES_SERVICE_URL}`);
 logger.info(`NOTIFICATIONS_SERVICE_URL: ${process.env.NOTIFICATIONS_SERVICE_URL}`);
 logger.info(`VOICE_SEARCH_SERVICE_URL: ${process.env.VOICE_SEARCH_SERVICE_URL}`);
+logger.info(`PAYMENT_SERVICE_URL: ${process.env.PAYMENT_SERVICE_URL}`);
 
 /**
  * Auth service proxy middleware
@@ -110,6 +111,14 @@ export const voiceSearchServiceProxy = createServiceProxy(
   process.env.VOICE_SEARCH_SERVICE_URL || 'http://localhost:3006'
 );
 
+/**
+ * Payment service proxy middleware
+ */
+export const paymentServiceProxy = createServiceProxy(
+  '/api/payments',
+  process.env.PAYMENT_SERVICE_URL || 'http://localhost:3007'
+);
+
 export default {
   createServiceProxy,
   authServiceProxy,
@@ -117,5 +126,6 @@ export default {
   bidsServiceProxy,
   messagesServiceProxy,
   notificationsServiceProxy,
-  voiceSearchServiceProxy
+  voiceSearchServiceProxy,
+  paymentServiceProxy
 };

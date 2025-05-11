@@ -29,6 +29,22 @@ services:
     networks:
       - skillswap-network
 
+  # PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=skillswap_payments
+    networks:
+      - skillswap-network
+
   # MongoDB Express (Web-based MongoDB admin interface)
   mongo-express:
     image: mongo-express:latest
@@ -220,6 +236,47 @@ services:
     networks:
       - skillswap-network
 
+  # Payment Service
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    container_name: payment-service
+    restart: always
+    ports:
+      - "3007:3007"
+    environment:
+      - NODE_ENV=development
+      - PORT=3007
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/skillswap_payments
+      - SUPABASE_URL=your_supabase_url
+      - SUPABASE_KEY=your_supabase_key
+      - JWT_PUBLIC_KEY=skillswap_jwt_public_key_development
+      - JWT_PRIVATE_KEY=skillswap_jwt_private_key_development
+      - STRIPE_SECRET_KEY=your_stripe_secret_key
+      - STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+      - PAYPAL_CLIENT_ID=your_paypal_client_id
+      - PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+      - PAYPAL_ENVIRONMENT=sandbox
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - PROJECTS_SERVICE_URL=http://projects-service:3002
+      - BIDS_SERVICE_URL=http://bids-service:3003
+      - NOTIFICATIONS_SERVICE_URL=http://notifications-service:3005
+      - PLATFORM_FEE_PERCENTAGE=10
+      - WITHDRAWAL_FEE_PERCENTAGE=2.5
+      - MINIMUM_WITHDRAWAL_AMOUNT=50
+    volumes:
+      - ./services/payment-service:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - postgres
+      - auth-service
+      - projects-service
+      - bids-service
+      - notifications-service
+    networks:
+      - skillswap-network
+
   # API Gateway
   api-gateway:
     build:
@@ -238,6 +295,7 @@ services:
       - MESSAGES_SERVICE_URL=http://messages-service:3004
       - NOTIFICATIONS_SERVICE_URL=http://notifications-service:3005
       - VOICE_SEARCH_SERVICE_URL=http://voice-search-service:3006
+      - PAYMENT_SERVICE_URL=http://payment-service:3007
       - FRONTEND_URL=http://localhost:5173
       - JWT_PUBLIC_KEY=skillswap_jwt_public_key_development
     volumes:
@@ -250,6 +308,7 @@ services:
       - messages-service
       - notifications-service
       - voice-search-service
+      - payment-service
     networks:
       - skillswap-network
 
@@ -280,3 +339,4 @@ networks:
 volumes:
   mongodb_data:
   redis_data:
+  postgres_data:
