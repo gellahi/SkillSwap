@@ -16,6 +16,19 @@ services:
     networks:
       - skillswap-network
 
+  # Redis
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - skillswap-network
+
   # MongoDB Express (Web-based MongoDB admin interface)
   mongo-express:
     image: mongo-express:latest
@@ -54,11 +67,17 @@ services:
       - SMTP_PORT=587
       - SMTP_USER=ethereal_user
       - SMTP_PASS=ethereal_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PREFIX=skillswap_auth:
+      - REDIS_CACHE_TTL=3600
+      - JWT_REFRESH_EXPIRY_SECONDS=604800
     volumes:
       - ./services/auth:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
       - mongodb
+      - redis
     networks:
       - skillswap-network
 
@@ -225,3 +244,4 @@ networks:
 
 volumes:
   mongodb_data:
+  redis_data:

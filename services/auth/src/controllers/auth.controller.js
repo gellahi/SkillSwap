@@ -2,8 +2,14 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../models/user.model.js';
 import OTP from '../models/otp.model.js';
-import { ApiError } from '../../../../shared/middlewares/error-handler.js';
+import { ApiError, logger } from '../../../../shared/middlewares/error-handler.js';
 import { generateOTP, hashOTP } from '../../../../shared/utils/otp-utils.js';
+import { CacheService } from '../../../../shared/utils/index.js';
+
+// Initialize cache service
+const cache = new CacheService({
+  keyPrefix: 'auth:session:'
+});
 
 /**
  * Register a new user
@@ -36,11 +42,11 @@ export const signup = async (req, res, next) => {
     // Generate OTP for verification
     const otp = generateOTP(6);
     const otpHash = hashOTP(otp, process.env.OTP_SECRET);
-    
+
     // Calculate expiry time (10 minutes from now)
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10);
-    
+
     // Save OTP to database
     await new OTP({
       userId: user._id,
@@ -52,7 +58,7 @@ export const signup = async (req, res, next) => {
 
     // In a real application, send OTP via email or SMS
     // For now, we'll just return it in the response (for development only)
-    
+
     res.status(201).json({
       success: true,
       message: 'User registered successfully. Please verify your account.',
@@ -157,6 +163,24 @@ export const login = async (req, res, next) => {
     user.lastLogin = new Date();
     await user.save();
 
+    // Store session data in Redis
+    const sessionData = {
+      userId: user._id.toString(),
+      email: user.email,
+      role: user.role,
+      isVerified: user.isVerified,
+      lastLogin: user.lastLogin,
+      createdAt: new Date()
+    };
+
+    // Use the refresh token as the session key (without the signature part for security)
+    const sessionKey = `session:${refreshToken.split('.').slice(0, 2).join('.')}`;
+
+    // Store session with TTL matching the refresh token expiry
+    const refreshTtl = parseInt(process.env.JWT_REFRESH_EXPIRY_SECONDS || 7 * 24 * 60 * 60); // 7 days in seconds
+    await cache.set(sessionKey, sessionData, refreshTtl);
+    logger.info(`Created session for user: ${user._id}`);
+
     res.status(200).json({
       success: true,
       message: 'Login successful',
@@ -202,11 +226,11 @@ export const requestPasswordReset = async (req, res, next) => {
     // Generate OTP for password reset
     const otp = generateOTP(6);
     const otpHash = hashOTP(otp, process.env.OTP_SECRET);
-    
+
     // Calculate expiry time (10 minutes from now)
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10);
-    
+
     // Save OTP to database
     await new OTP({
       userId: user._id,
@@ -218,7 +242,7 @@ export const requestPasswordReset = async (req, res, next) => {
 
     // In a real application, send OTP via email
     // For now, we'll just return it in the response (for development only)
-    
+
     res.status(200).json({
       success: true,
       message: 'Password reset OTP sent to your email',

@@ -21,6 +21,24 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # Redis
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - skillswap-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   # Auth Service
   auth-service:
     build:
@@ -43,8 +61,14 @@ services:
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASS=${SMTP_PASS}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PREFIX=skillswap_auth:
+      - REDIS_CACHE_TTL=3600
+      - JWT_REFRESH_EXPIRY_SECONDS=604800
     depends_on:
       - mongodb
+      - redis
     networks:
       - skillswap-network
     logging:
@@ -226,3 +250,4 @@ networks:
 
 volumes:
   mongodb_data:
+  redis_data:

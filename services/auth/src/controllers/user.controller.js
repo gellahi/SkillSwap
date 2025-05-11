@@ -1,5 +1,11 @@
 import User from '../models/user.model.js';
-import { ApiError } from '../../../../shared/middlewares/error-handler.js';
+import { ApiError, logger } from '../../../../shared/middlewares/error-handler.js';
+import { CacheService } from '../../../../shared/utils/index.js';
+
+// Initialize cache service
+const cache = new CacheService({
+  keyPrefix: 'auth:user:'
+});
 
 /**
  * Get current user profile
@@ -9,12 +15,26 @@ import { ApiError } from '../../../../shared/middlewares/error-handler.js';
 export const getCurrentUser = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    
-    const user = await User.findById(userId);
+    const cacheKey = `profile:${userId}`;
+
+    // Try to get user from cache
+    let user = await cache.get(cacheKey);
+
+    // If not in cache, get from database and cache it
     if (!user) {
-      throw new ApiError(404, 'User not found');
+      logger.info(`Cache miss for user profile: ${userId}`);
+      user = await User.findById(userId);
+
+      if (!user) {
+        throw new ApiError(404, 'User not found');
+      }
+
+      // Cache user data for 10 minutes
+      await cache.set(cacheKey, user, 600);
+    } else {
+      logger.info(`Cache hit for user profile: ${userId}`);
     }
-    
+
     res.status(200).json({
       success: true,
       data: user
@@ -33,13 +53,14 @@ export const updateProfile = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const { firstName, lastName, bio, skills, location, socialLinks, phoneNumber } = req.body;
-    
+    const cacheKey = `profile:${userId}`;
+
     // Find user
     const user = await User.findById(userId);
     if (!user) {
       throw new ApiError(404, 'User not found');
     }
-    
+
     // Update fields if provided
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
@@ -48,10 +69,14 @@ export const updateProfile = async (req, res, next) => {
     if (location) user.location = location;
     if (socialLinks) user.socialLinks = socialLinks;
     if (phoneNumber) user.phoneNumber = phoneNumber;
-    
+
     // Save updated user
     await user.save();
-    
+
+    // Update cache
+    await cache.set(cacheKey, user, 600);
+    logger.info(`Updated cache for user profile: ${userId}`);
+
     res.status(200).json({
       success: true,
       message: 'Profile updated successfully',
@@ -71,25 +96,30 @@ export const changePassword = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const { currentPassword, newPassword } = req.body;
-    
+    const cacheKey = `profile:${userId}`;
+
     // Find user with password
     const user = await User.findById(userId).select('+password');
     if (!user) {
       throw new ApiError(404, 'User not found');
     }
-    
+
     // Verify current password
     const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
       throw new ApiError(401, 'Current password is incorrect');
     }
-    
+
     // Update password
     user.password = newPassword;
     // Invalidate refresh token
     user.refreshToken = null;
     await user.save();
-    
+
+    // Invalidate cache since security-related data changed
+    await cache.del(cacheKey);
+    logger.info(`Invalidated cache for user profile after password change: ${userId}`);
+
     res.status(200).json({
       success: true,
       message: 'Password changed successfully'
@@ -107,12 +137,26 @@ export const changePassword = async (req, res, next) => {
 export const getUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    
-    const user = await User.findById(id);
+    const cacheKey = `user:${id}`;
+
+    // Try to get user from cache
+    let user = await cache.get(cacheKey);
+
+    // If not in cache, get from database and cache it
     if (!user) {
-      throw new ApiError(404, 'User not found');
+      logger.info(`Cache miss for user: ${id}`);
+      user = await User.findById(id);
+
+      if (!user) {
+        throw new ApiError(404, 'User not found');
+      }
+
+      // Cache user data for 10 minutes
+      await cache.set(cacheKey, user, 600);
+    } else {
+      logger.info(`Cache hit for user: ${id}`);
     }
-    
+
     res.status(200).json({
       success: true,
       data: user
@@ -130,27 +174,34 @@ export const getUserById = async (req, res, next) => {
 export const getAllUsers = async (req, res, next) => {
   try {
     const { role, isVerified, page = 1, limit = 10 } = req.query;
-    
+
     // Build query
     const query = {};
     if (role) query.role = role;
     if (isVerified !== undefined) query.isVerified = isVerified === 'true';
-    
+
     // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    
-    // Execute query
-    const users = await User.find(query)
-      .skip(skip)
-      .limit(parseInt(limit))
-      .sort({ createdAt: -1 });
-    
-    // Get total count
-    const total = await User.countDocuments(query);
-    
-    res.status(200).json({
-      success: true,
-      data: {
+
+    // Create cache key based on query parameters
+    const cacheKey = `users:${role || 'all'}:${isVerified || 'all'}:${page}:${limit}`;
+
+    // Try to get results from cache
+    let result = await cache.get(cacheKey);
+
+    if (!result) {
+      logger.info(`Cache miss for users list: ${cacheKey}`);
+
+      // Execute query
+      const users = await User.find(query)
+        .skip(skip)
+        .limit(parseInt(limit))
+        .sort({ createdAt: -1 });
+
+      // Get total count
+      const total = await User.countDocuments(query);
+
+      result = {
         users,
         pagination: {
           total,
@@ -158,7 +209,17 @@ export const getAllUsers = async (req, res, next) => {
           limit: parseInt(limit),
           pages: Math.ceil(total / parseInt(limit))
         }
-      }
+      };
+
+      // Cache results for 5 minutes (shorter time for lists that change frequently)
+      await cache.set(cacheKey, result, 300);
+    } else {
+      logger.info(`Cache hit for users list: ${cacheKey}`);
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result
     });
   } catch (error) {
     next(error);
@@ -174,13 +235,14 @@ export const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { firstName, lastName, email, role, isVerified, isActive } = req.body;
-    
+    const userCacheKey = `user:${id}`;
+
     // Find user
     const user = await User.findById(id);
     if (!user) {
       throw new ApiError(404, 'User not found');
     }
-    
+
     // Update fields if provided
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
@@ -188,10 +250,18 @@ export const updateUser = async (req, res, next) => {
     if (role) user.role = role;
     if (isVerified !== undefined) user.isVerified = isVerified;
     if (isActive !== undefined) user.isActive = isActive;
-    
+
     // Save updated user
     await user.save();
-    
+
+    // Update user cache
+    await cache.set(userCacheKey, user, 600);
+    logger.info(`Updated cache for user: ${id}`);
+
+    // Invalidate users list cache since a user was updated
+    await cache.clearByPrefix('users:');
+    logger.info('Invalidated users list cache after user update');
+
     res.status(200).json({
       success: true,
       message: 'User updated successfully',
@@ -210,14 +280,23 @@ export const updateUser = async (req, res, next) => {
 export const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    
+    const userCacheKey = `user:${id}`;
+
     const user = await User.findById(id);
     if (!user) {
       throw new ApiError(404, 'User not found');
     }
-    
+
     await user.deleteOne();
-    
+
+    // Delete user from cache
+    await cache.del(userCacheKey);
+    logger.info(`Deleted user from cache: ${id}`);
+
+    // Invalidate users list cache since a user was deleted
+    await cache.clearByPrefix('users:');
+    logger.info('Invalidated users list cache after user deletion');
+
     res.status(200).json({
       success: true,
       message: 'User deleted successfully'

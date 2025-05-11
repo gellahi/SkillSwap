@@ -11,10 +11,11 @@ import fs from 'fs';
 dotenv.config();
 
 // Import middleware
-import { errorHandler, notFound, logger } from '../../../shared/middlewares/index.js';
+import { errorHandler, notFound, logger, defaultLimiters } from '../../../shared/middlewares/index.js';
 
-// Import database connection
+// Import database connections
 import { connectToMongoDB } from '../../../shared/db-connection/mongodb.js';
+import { getRedisClient } from '../../../shared/db-connection/redis.js';
 
 // Import routes
 import routes from './routes/index.js';
@@ -43,6 +44,15 @@ app.use(morgan('combined', {
   }
 }));
 
+// Apply rate limiting to auth routes
+app.use('/api/auth/login', defaultLimiters.auth);
+app.use('/api/auth/signup', defaultLimiters.auth);
+app.use('/api/auth/reset-password', defaultLimiters.auth);
+app.use('/api/auth/verify', defaultLimiters.auth);
+
+// Apply general rate limiting to all other auth routes
+app.use('/api/auth', defaultLimiters.api);
+
 // Mount API routes
 app.use('/api/auth', routes);
 
@@ -66,7 +76,7 @@ app.get('/', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-// Connect to MongoDB
+// Connect to databases and start server
 const startServer = async () => {
   try {
     // Try to connect to MongoDB
@@ -77,6 +87,17 @@ const startServer = async () => {
       // For demonstration purposes, we'll continue even if MongoDB connection fails
       logger.error(`Failed to connect to MongoDB: ${dbError.message}`);
       logger.warn('Continuing without MongoDB connection for demonstration purposes');
+    }
+
+    // Initialize Redis connection
+    try {
+      const redisClient = getRedisClient();
+      // Ping Redis to check connection
+      await redisClient.ping();
+      logger.info('Connected to Redis successfully');
+    } catch (redisError) {
+      logger.error(`Failed to connect to Redis: ${redisError.message}`);
+      logger.warn('Continuing without Redis connection for demonstration purposes');
     }
 
     // Start server
