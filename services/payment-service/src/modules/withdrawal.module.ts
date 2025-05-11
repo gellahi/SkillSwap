@@ -8,7 +8,6 @@ import { PaymentMethodModule } from './payment-method.module';
 import { TransactionModule } from './transaction.module';
 import { NotificationIntegrationService } from '../services/integration/notification.service';
 import { StripeService } from '../services/providers/stripe.service';
-import { PaypalService } from '../services/providers/paypal.service';
 
 @Module({
   imports: [
@@ -22,7 +21,6 @@ import { PaypalService } from '../services/providers/paypal.service';
     WithdrawalService,
     NotificationIntegrationService,
     StripeService,
-    PaypalService,
   ],
   exports: [WithdrawalService],
 })

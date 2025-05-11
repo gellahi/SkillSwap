@@ -10,7 +10,6 @@ import {
 export enum PaymentMethodType {
   CREDIT_CARD = 'credit_card',
   BANK_ACCOUNT = 'bank_account',
-  PAYPAL = 'paypal',
   STRIPE = 'stripe',
 }
 

@@ -7,7 +7,7 @@ The Payment Service is a microservice for the SkillSwap freelancing platform tha
 - **Transaction Management**: ACID-compliant transaction processing
 - **Escrow System**: Secure escrow funding and milestone-based payments
 - **Wallet Management**: Balance tracking and management for users
-- **Payment Methods**: Support for multiple payment methods (Stripe, PayPal)
+- **Payment Methods**: Support for multiple payment methods via Stripe
 - **Withdrawal Processing**: Secure withdrawal requests and processing
 - **Platform Fee Calculation**: Automatic calculation and collection of platform fees
 
@@ -50,6 +50,19 @@ The Payment Service is a microservice for the SkillSwap freelancing platform tha
 - `POST /api/payments/withdrawals` - Create a withdrawal request
 - `POST /api/payments/withdrawals/:id/process` - Process a withdrawal
 - `POST /api/payments/withdrawals/:id/cancel` - Cancel a withdrawal
+
+### Stripe Integration
+
+- `POST /api/payments/stripe/setup-intent` - Create a setup intent for adding a payment method
+- `POST /api/payments/stripe/payment-methods` - Add a payment method
+- `GET /api/payments/stripe/payment-methods` - Get user's Stripe payment methods
+- `POST /api/payments/stripe/connected-account` - Create a connected account for a freelancer
+- `GET /api/payments/stripe/connected-account/:id` - Get connected account details
+- `POST /api/payments/stripe/payment-intent` - Create a payment intent
+
+### Webhooks
+
+- `POST /api/payments/webhooks/stripe` - Stripe webhook endpoint
 
 ## Database Schema
 
@@ -151,9 +164,7 @@ The Payment Service is a microservice for the SkillSwap freelancing platform tha
 - `JWT_PRIVATE_KEY` - JWT private key for signing
 - `STRIPE_SECRET_KEY` - Stripe secret key
 - `STRIPE_WEBHOOK_SECRET` - Stripe webhook secret
-- `PAYPAL_CLIENT_ID` - PayPal client ID
-- `PAYPAL_CLIENT_SECRET` - PayPal client secret
-- `PAYPAL_ENVIRONMENT` - PayPal environment (sandbox, production)
+- `STRIPE_ACCOUNT_COUNTRY` - Default country for Stripe accounts
 - `AUTH_SERVICE_URL` - Auth service URL
 - `PROJECTS_SERVICE_URL` - Projects service URL
 - `BIDS_SERVICE_URL` - Bids service URL

@@ -9,6 +9,9 @@ import { EscrowModule } from './modules/escrow.module';
 import { WalletModule } from './modules/wallet.module';
 import { PaymentMethodModule } from './modules/payment-method.module';
 import { WithdrawalModule } from './modules/withdrawal.module';
+import { WebhookModule } from './modules/webhook.module';
+import { StripeModule } from './modules/stripe.module';
+import { HealthModule } from './modules/health.module';
 
 @Module({
   imports: [
@@ -17,7 +20,7 @@ import { WithdrawalModule } from './modules/withdrawal.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    
+
     // Database
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -31,7 +34,7 @@ import { WithdrawalModule } from './modules/withdrawal.module';
         logging: configService.get('NODE_ENV') === 'development',
       }),
     }),
-    
+
     // JWT
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -43,13 +46,16 @@ import { WithdrawalModule } from './modules/withdrawal.module';
         },
       }),
     }),
-    
+
     // Feature modules
     TransactionModule,
     EscrowModule,
     WalletModule,
     PaymentMethodModule,
     WithdrawalModule,
+    WebhookModule,
+    StripeModule,
+    HealthModule,
   ],
 })
 export class AppModule {}

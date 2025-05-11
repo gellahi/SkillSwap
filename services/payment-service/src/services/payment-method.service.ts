@@ -24,14 +24,14 @@ export class PaymentMethodService {
     try {
       // Create payment method
       const paymentMethod = this.paymentMethodRepository.create(createPaymentMethodDto);
-      
+
       // If this is the first payment method for the user, set it as default
       const existingMethods = await this.findByUserId(createPaymentMethodDto.userId);
-      
+
       if (existingMethods.length === 0) {
         paymentMethod.isDefault = true;
       }
-      
+
       // Save payment method
       return this.paymentMethodRepository.save(paymentMethod);
     } catch (error) {
@@ -58,6 +58,22 @@ export class PaymentMethodService {
   }
 
   /**
+   * Find payment methods by external ID
+   * @param externalId External ID
+   * @returns Payment methods
+   */
+  async findByExternalId(externalId: string): Promise<PaymentMethod[]> {
+    try {
+      return this.paymentMethodRepository.find({
+        where: { externalId },
+      });
+    } catch (error) {
+      this.logger.error(`Failed to find payment methods by external ID: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
    * Find payment method by ID
    * @param id Payment method ID
    * @returns Payment method
@@ -67,11 +83,11 @@ export class PaymentMethodService {
       const paymentMethod = await this.paymentMethodRepository.findOne({
         where: { id },
       });
-      
+
       if (!paymentMethod) {
         throw new NotFoundException(`Payment method with ID ${id} not found`);
       }
-      
+
       return paymentMethod;
     } catch (error) {
       this.logger.error(`Failed to find payment method: ${error.message}`);
@@ -88,10 +104,10 @@ export class PaymentMethodService {
   async update(id: string, updatePaymentMethodDto: UpdatePaymentMethodDto): Promise<PaymentMethod> {
     try {
       const paymentMethod = await this.findOne(id);
-      
+
       // Update payment method
       const updatedPaymentMethod = Object.assign(paymentMethod, updatePaymentMethodDto);
-      
+
       // If setting as default, unset other payment methods as default
       if (updatePaymentMethodDto.isDefault) {
         await this.paymentMethodRepository.update(
@@ -99,7 +115,7 @@ export class PaymentMethodService {
           { isDefault: false },
         );
       }
-      
+
       return this.paymentMethodRepository.save(updatedPaymentMethod);
     } catch (error) {
       this.logger.error(`Failed to update payment method: ${error.message}`);
@@ -115,20 +131,20 @@ export class PaymentMethodService {
   async remove(id: string): Promise<PaymentMethod> {
     try {
       const paymentMethod = await this.findOne(id);
-      
+
       // Delete payment method
       await this.paymentMethodRepository.remove(paymentMethod);
-      
+
       // If this was the default payment method, set another one as default
       if (paymentMethod.isDefault) {
         const otherMethods = await this.findByUserId(paymentMethod.userId);
-        
+
         if (otherMethods.length > 0) {
           otherMethods[0].isDefault = true;
           await this.paymentMethodRepository.save(otherMethods[0]);
         }
       }
-      
+
       return paymentMethod;
     } catch (error) {
       this.logger.error(`Failed to delete payment method: ${error.message}`);
@@ -146,18 +162,18 @@ export class PaymentMethodService {
       const paymentMethod = await this.paymentMethodRepository.findOne({
         where: { userId, isDefault: true },
       });
-      
+
       if (!paymentMethod) {
         // Try to get any payment method
         const methods = await this.findByUserId(userId);
-        
+
         if (methods.length > 0) {
           return methods[0];
         }
-        
+
         throw new NotFoundException(`No payment methods found for user ${userId}`);
       }
-      
+
       return paymentMethod;
     } catch (error) {
       this.logger.error(`Failed to get default payment method: ${error.message}`);
@@ -174,11 +190,11 @@ export class PaymentMethodService {
   async verifyStripePaymentMethod(id: string, stripePaymentMethodId: string): Promise<PaymentMethod> {
     try {
       const paymentMethod = await this.findOne(id);
-      
+
       // Update payment method
       paymentMethod.externalId = stripePaymentMethodId;
       paymentMethod.status = PaymentMethodStatus.ACTIVE;
-      
+
       return this.paymentMethodRepository.save(paymentMethod);
     } catch (error) {
       this.logger.error(`Failed to verify Stripe payment method: ${error.message}`);

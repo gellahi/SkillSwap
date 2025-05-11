@@ -255,9 +255,7 @@ services:
       - JWT_PRIVATE_KEY=skillswap_jwt_private_key_development
       - STRIPE_SECRET_KEY=your_stripe_secret_key
       - STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-      - PAYPAL_CLIENT_ID=your_paypal_client_id
-      - PAYPAL_CLIENT_SECRET=your_paypal_client_secret
-      - PAYPAL_ENVIRONMENT=sandbox
+      - STRIPE_ACCOUNT_COUNTRY=US
       - AUTH_SERVICE_URL=http://auth-service:3001
       - PROJECTS_SERVICE_URL=http://projects-service:3002
       - BIDS_SERVICE_URL=http://bids-service:3003

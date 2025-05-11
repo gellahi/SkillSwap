@@ -17,5 +17,5 @@ RUN npm run build
 # Expose port
 EXPOSE 3007
 
-# Start the app
-CMD ["node", "dist/main"]
+# Start the app with database initialization
+CMD ["/bin/sh", "-c", "npm run init-db && node dist/main"]
