@@ -36,13 +36,19 @@ export class WebhookController {
     @Headers('stripe-signature') signature: string,
   ) {
     try {
+      // Make signature optional for development without webhooks
+      const payload = req.rawBody ? req.rawBody.toString() : JSON.stringify(req.body);
+
+      // If signature is missing but we're in development mode, proceed anyway
       if (!signature) {
-        throw new HttpException('Missing stripe-signature header', HttpStatus.BAD_REQUEST);
+        this.logger.warn('Missing stripe-signature header. This is insecure for production.');
+        // Only allow this in development mode
+        if (process.env.NODE_ENV === 'production') {
+          throw new HttpException('Missing stripe-signature header', HttpStatus.BAD_REQUEST);
+        }
       }
 
-      const payload = req.rawBody.toString();
-      const event = this.stripeService.verifyWebhookSignature(payload, signature);
-
+      const event = this.stripeService.verifyWebhookSignature(payload, signature || '');
       this.logger.log(`Processing Stripe webhook event: ${event.type}`);
 
       switch (event.type) {

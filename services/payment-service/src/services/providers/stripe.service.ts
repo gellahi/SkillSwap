@@ -11,12 +11,17 @@ export class StripeService {
 
   constructor(private configService: ConfigService) {
     const stripeSecretKey = this.configService.get<string>('STRIPE_SECRET_KEY');
-    this.webhookSecret = this.configService.get<string>('STRIPE_WEBHOOK_SECRET');
+    // Make webhook secret optional
+    this.webhookSecret = this.configService.get<string>('STRIPE_WEBHOOK_SECRET', '');
     this.accountCountry = this.configService.get<string>('STRIPE_ACCOUNT_COUNTRY', 'US');
 
     this.stripe = new Stripe(stripeSecretKey, {
       apiVersion: '2023-10-16',
     });
+
+    if (!stripeSecretKey) {
+      this.logger.warn('Stripe secret key not provided. Stripe integration will not work properly.');
+    }
   }
 
   /**
@@ -358,6 +363,14 @@ export class StripeService {
    */
   verifyWebhookSignature(payload: string, signature: string): Stripe.Event {
     try {
+      // If webhook secret is not provided, log a warning and parse the payload directly
+      if (!this.webhookSecret) {
+        this.logger.warn('Webhook secret not provided. Skipping signature verification.');
+        // Parse the payload as JSON and return it as an event
+        // Note: This is not secure for production, but allows development without webhooks
+        return JSON.parse(payload) as Stripe.Event;
+      }
+
       return this.stripe.webhooks.constructEvent(
         payload,
         signature,

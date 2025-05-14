@@ -7,7 +7,9 @@ import {
   UseGuards,
   Request,
   UseInterceptors,
+  Inject,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { StripeService } from '../services/providers/stripe.service';
 import { AuthGuard } from '../guards/auth.guard';
 import { TransactionLoggingInterceptor } from '../interceptors/transaction-logging.interceptor';
@@ -18,10 +20,22 @@ import { PaymentMethodType } from '../entities/payment-method.entity';
 @UseGuards(AuthGuard)
 @UseInterceptors(TransactionLoggingInterceptor)
 export class StripeController {
+  private readonly stripePublishableKey: string;
+
   constructor(
     private readonly stripeService: StripeService,
     private readonly paymentMethodService: PaymentMethodService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.stripePublishableKey = this.configService.get<string>('STRIPE_PUBLISHABLE_KEY', '');
+  }
+
+  @Get('config')
+  getConfig() {
+    return {
+      publishableKey: this.stripePublishableKey
+    };
+  }
 
   @Post('setup-intent')
   async createSetupIntent(@Request() req) {
