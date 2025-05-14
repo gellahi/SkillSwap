@@ -61,7 +61,7 @@ services:
     networks:
       - skillswap-network
 
-  # Auth Service
+  # f Service
   auth-service:
     build:
       context: ./services/auth

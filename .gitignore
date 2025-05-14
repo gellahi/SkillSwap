@@ -10,9 +10,7 @@ yarn-error.log
 */yarn.lock
 
 # Environment variables
-.env
-*/.env
-services/*/.env
+# services/*/.env
 frontend/.env
 .env.local
 .env.development.local
